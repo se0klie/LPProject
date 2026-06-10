@@ -2,7 +2,7 @@ from datetime import datetime
 from lexer import lexer
 import os
 
-nombre='hailie_jimenez'
+nombre="nombre_apellido"
 for filename in os.listdir("./algoritmos/"):
     if filename.endswith(".cr"):
         with open(f"./algoritmos/{filename}") as f:
