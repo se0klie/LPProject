@@ -1,0 +1,12 @@
+ID -> edad
+ASSIGN -> =
+INT -> 20
+ID -> while
+ID -> edad
+INT -> 25
+ID -> edad
+ASSIGN -> =
+ID -> edad
+PLUS -> +
+INT -> 1
+ID -> end
