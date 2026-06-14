@@ -32,7 +32,26 @@ tokens = (
     'LBRACE',     
     'RBRACE',     
     'STAR',       
-    'DSTAR',      
+    'DSTAR',
+
+    # ----- Tokens aporte Paulo Tapia -----
+    'INSTANCE_VAR',
+    'CLASS_VAR',
+    'LBRACKET',
+    'RBRACKET',
+    'AND',
+    'OR',
+    'NOT',
+    'RANGE_EXCLUSIVE',
+    'RANGE',
+    'SYMBOL', 
+
+    'LT',
+    'LE',
+    'GT',
+    'GE',     
+
+    'AT',
 )
 
 
@@ -96,6 +115,43 @@ def t_STRING(t):
     return t
 #FIN APORTE CHRISTIAN MACIAS
 
+# Inicio Aporte Paulo Tapia
+
+# Arrays
+t_LBRACKET = r'\['
+t_RBRACKET = r'\]'
+
+# Operadores logicos
+t_AND = r'&&'
+t_OR = r'\|\|'
+t_NOT = r'!'
+t_AT = r'@'
+
+# Operadores relacionales
+t_LE = r'<='
+t_GE = r'>='
+t_LT = r'<'
+t_GT = r'>'
+
+# Rangos
+t_RANGE_EXCLUSIVE = r'\.\.\.'
+t_RANGE = r'\.\.'
+
+# Variables de instancia y clase
+def t_CLASS_VAR(t):
+    r'@@[a-zA-Z_][a-zA-Z0-9_]*'
+    return t
+
+def t_INSTANCE_VAR(t):
+    r'@[a-zA-Z_][a-zA-Z0-9_]*'
+    return t
+
+# Simbolos
+def t_SYMBOL(t):
+    r':[a-zA-Z_][a-zA-Z0-9_]*'
+    return t
+
+# Fin aporte Paulo Tapia
 
 #Aporte Hailie Jimenez
 def t_ID(t):

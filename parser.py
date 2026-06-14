@@ -24,4 +24,4 @@ for filename in os.listdir("./algoritmos/"):
 
                 log.write(
                     f"{tok.type} -> {tok.value}\n"
-                )
+                ) 
