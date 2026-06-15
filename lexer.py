@@ -22,7 +22,7 @@ tokens = (
 
     'TYPE',
 
-    # ----- Tokens aporte Christian Macias (Integrante 3) -----
+    # ----- Tokens aporte Christian Macias -----
     'CONST',      
     'PIPE',       
     'CASE',       
