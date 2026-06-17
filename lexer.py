@@ -3,6 +3,8 @@ import ply.lex as lex
 tokens = (
     'ID',
     'INT',
+    'BOOLEAN',
+    'FLOAT',
     'STRING',
 
     'ASSIGN',
@@ -10,9 +12,12 @@ tokens = (
     'COLON',
     'PLUS',
     'MINUS',
+    'MULTIPLY',
+    'DIVIDE',
 
     'WHILE',
     'UNTIL',
+    'DO',
     'DEF',
     'END',
 
@@ -56,12 +61,17 @@ tokens = (
 
 
 #Aporte Hailie Jimenez
+# Variables: type inference  ·  Control: while-do/until
+# Datos: hash              ·  Funcion: params
 
 reserved = {
     'while': 'WHILE',
     'until': 'UNTIL',
+    'do': 'DO',
     'def': 'DEF',
     'end': 'END',
+    'true': 'BOOLEAN',
+    'false': 'BOOLEAN'
 }
 
 t_COLON= r':'
@@ -69,6 +79,19 @@ t_ASSIGN= r'='
 t_HASH_ARROW =r'=>'
 t_PLUS= r'\+'
 t_MINUS= r'\-'
+t_MULTIPLY= r'\*'
+t_DIVIDE= r'\/'
+
+
+def t_FLOAT(t):
+    r'[0-9]+.[0-9]+'
+    return t
+
+#added to recognize reserved words automatically without defining a rule for each
+def t_ID(t):
+    r'[a-zA-Z_][a-zA-Z0-9_]*'
+    t.type = reserved.get(t.value, 'ID')
+    return t
 #FIN APORTE HAILIE JIMENEZ
 
 
@@ -154,10 +177,6 @@ def t_SYMBOL(t):
 # Fin aporte Paulo Tapia
 
 #Aporte Hailie Jimenez
-def t_ID(t):
-    r'[a-zA-Z_][a-zA-Z0-9_]*'
-    return t
-
 def t_INT(t):
     r'\d+'
     t.value = int(t.value)
