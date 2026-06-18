@@ -8,7 +8,7 @@ tokens = (
     'STRING',
 
     'ASSIGN',
-    'HASH_ARROW',
+    'HASHROCKET',
     'COLON',
     'PLUS',
     'MINUS',
@@ -76,7 +76,7 @@ reserved = {
 
 t_COLON= r':'
 t_ASSIGN= r'='
-t_HASH_ARROW =r'=>'
+t_HASHROCKET =r'=>'
 t_PLUS= r'\+'
 t_MINUS= r'\-'
 t_MULTIPLY= r'\*'
