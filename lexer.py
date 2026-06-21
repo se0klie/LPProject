@@ -71,7 +71,22 @@ reserved = {
     'def': 'DEF',
     'end': 'END',
     'true': 'BOOLEAN',
-    'false': 'BOOLEAN'
+    'false': 'BOOLEAN',
+
+# Tipos de datos para type inference / control structures (Aporte Christian Macias)
+    'Int32': 'TYPE',
+    'Int64': 'TYPE',
+    'Float32': 'TYPE',
+    'Float64': 'TYPE',
+    'String': 'TYPE',
+    'Bool': 'TYPE',
+    'Char': 'TYPE',
+    'case': 'CASE',
+    'when': 'WHEN',
+    'then': 'THEN',
+    'else': 'ELSE'
+# Fin aporte Christian Macias
+    
 }
 
 t_COLON= r':'
@@ -86,6 +101,14 @@ t_DIVIDE= r'\/'
 def t_FLOAT(t):
     r'[0-9]+.[0-9]+'
     return t
+
+# -------------- inicio aporte Christian Macias --------------
+# Fix de jerarquia para constantes
+def t_CONST(t):
+    r'[A-Z][a-zA-Z0-9_]*'
+    t.type = reserved.get(t.value, 'CONST')
+    return t
+#-----fin aporte Christian Macias-----
 
 #added to recognize reserved words automatically without defining a rule for each
 def t_ID(t):
@@ -109,33 +132,18 @@ t_RPAREN = r'\)'
 t_DSTAR  = r'\*\*'      
 t_STAR   = r'\*'        
 
-# --- Control: case / when / then / else ---
-def t_CASE(t):
-    r'case(?![A-Za-z0-9_])'
-    return t
-
-def t_WHEN(t):
-    r'when(?![A-Za-z0-9_])'
-    return t
-
-def t_THEN(t):
-    r'then(?![A-Za-z0-9_])'
-    return t
-
-def t_ELSE(t):
-    r'else(?![A-Za-z0-9_])'
-    return t
-
-# --- Variables: constantes y nombres de tipo ---
-def t_CONST(t):
-    r'[A-Z][a-zA-Z0-9_]*'
-    return t
 
 # --- Cadenas  ---
 def t_STRING(t):
     r'"[^"\n]*"'
     t.value = t.value[1:-1]
     return t
+
+# --- Comentarios ---
+def t_COMMENT(t):
+    r'\#.*'
+    pass
+
 #FIN APORTE CHRISTIAN MACIAS
 
 # Inicio Aporte Paulo Tapia

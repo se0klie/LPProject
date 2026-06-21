@@ -1,0 +1,4 @@
+== Análisis de: algor_cm.cr ==
+[ERROR SINTÁCTICO] Error de sintaxis: fin inesperado del archivo
+
+Resumen: 1 archivos evaluados | 1 errores detectados
