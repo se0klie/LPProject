@@ -47,16 +47,16 @@ tokens = (
     'AND',
     'OR',
     'NOT',
-    'RANGE_EXCLUSIVE',
-    'RANGE',
     'SYMBOL', 
 
     'LT',
     'LE',
     'GT',
     'GE',     
-
-    'AT',
+    
+    'IF',
+    'ELSIF',
+    'RETURN',
 )
 
 
@@ -72,6 +72,12 @@ reserved = {
     'end': 'END',
     'true': 'BOOLEAN',
     'false': 'BOOLEAN',
+
+#Estructuras if/elseif y return (Aporte Paulo Tapia)
+    'if': 'IF',
+    'elseif': 'ELSIF',
+    'return': 'RETURN',
+#Fin Aporte Paulo Tapia
 
 # Tipos de datos para type inference / control structures (Aporte Christian Macias)
     'Int32': 'TYPE',

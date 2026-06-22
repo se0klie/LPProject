@@ -22,8 +22,11 @@ def p_statement(p):
               | function_definition
               | const_assignation
               | case_statement
+              | if_statement
+              | return_statement
     '''
                 # Se agregaron const_assignation y case_statement (Aporte Christian Macias)
+                # Se agregaron if_statement y return_stateement (Aporte Paulo Tapia)
                 
 def p_function_definition(p):
     '''
@@ -54,8 +57,11 @@ def p_assignation(p):
     assignation : ID ASSIGN expression 
                 | ID COLON TYPE ASSIGN expression
                 | ID COLON type_union ASSIGN expression
+                | INSTANCE_VAR ASSIGN expression
+                | CLASS_VAR ASSIGN expression
     '''
                     # Se agregó la validación para type_union (Aporte Christian Macias)
+                    # Se agrego  INSTANCE_VAR y CLASS_VAR (Aporte Paulo Tapia)
 
 def p_operator(p):
     '''
@@ -97,7 +103,11 @@ def p_expression(p):
     '''
     expression : expression operator expression 
                 | value
+                | NOT expression
+
     '''
+                # Se agrego NOT expression (Aporte Paulo Tapia)
+
 
 def p_condition(p):
     '''
@@ -116,8 +126,14 @@ def p_value(p):
             | hash
             | tuple
             | named_tuple
+            | array
+            | INSTANCE_VAR
+            | CLASS_VAR
+            | SYMBOL
+            | function_call
     '''
                 # Se agregaron tuple y named_tuple (Aporte Christian Macias)
+                # Se agrego array, INSTANCE_VAR, CLASS_VAR, SYMBOL y function_call
 
 def p_loop_statement(p):
     '''
@@ -215,5 +231,60 @@ def p_named_tuple_pair(p):
     '''
 
 # fin aporte Christian Macias
+
+# inicio aporte Paulo Tapia
+
+#Control: if / elsif / else
+def p_if_statement(p):
+    '''
+    if_statement : IF condition statement_list END
+                 | IF condition statement_list ELSE statement_list END
+                 | IF condition statement_list elsif_list END
+                 | IF condition statement_list elsif_list ELSE statement_list END
+    '''
+ 
+def p_elsif_list(p):
+    '''
+    elsif_list : elsif_clause
+               | elsif_list elsif_clause
+    '''
+ 
+def p_elsif_clause(p):
+    '''
+    elsif_clause : ELSIF condition statement_list
+    '''
+ 
+# Datos: Array
+def p_array(p):
+    '''
+    array : LBRACKET array_elements RBRACKET
+    '''
+ 
+def p_array_elements(p):
+    '''
+    array_elements : expression
+                   | array_elements COMMA expression
+                   | empty
+    '''
+ 
+# Funcion: return y llamada con argumentos
+def p_return_statement(p):
+    '''
+    return_statement : RETURN expression
+    '''
+ 
+def p_function_call(p):
+    '''
+    function_call : ID LPAREN call_arguments RPAREN
+    '''
+ 
+def p_call_arguments(p):
+    '''
+    call_arguments : expression
+                   | call_arguments COMMA expression
+                   | empty
+    '''
+ 
+# fin aporte Paulo Tapia
 
 parser = yacc.yacc(debug=True, write_tables=False)

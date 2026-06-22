@@ -1,2 +1,0 @@
-estado = :activo
-rol = :admin
