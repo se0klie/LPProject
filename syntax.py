@@ -112,7 +112,6 @@ def p_expression(p):
 def p_condition(p):
     '''
     condition : expression
-              | NOT expression
     '''
 
 

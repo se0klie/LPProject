@@ -162,17 +162,12 @@ t_RBRACKET = r'\]'
 t_AND = r'&&'
 t_OR = r'\|\|'
 t_NOT = r'!'
-t_AT = r'@'
 
 # Operadores relacionales
 t_LE = r'<='
 t_GE = r'>='
 t_LT = r'<'
 t_GT = r'>'
-
-# Rangos
-t_RANGE_EXCLUSIVE = r'\.\.\.'
-t_RANGE = r'\.\.'
 
 # Variables de instancia y clase
 def t_CLASS_VAR(t):
