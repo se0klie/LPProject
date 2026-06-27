@@ -28,15 +28,16 @@ tokens = (
     'TYPE',
 
     # ----- Tokens aporte Christian Macias -----
-    'CONST',      
-    'PIPE',       
-    'CASE',       
-    'WHEN',       
-    'ELSE',       
-    'LBRACE',     
-    'RBRACE',     
-    'STAR',       
+    'CONST',
+    'PIPE',
+    'CASE',
+    'WHEN',
+    'ELSE',
+    'LBRACE',
+    'RBRACE',
+    'STAR',
     'DSTAR',
+    'DOT',        # acceso a métodos: gets.chomp, gets.chomp.to_i, etc.
 
     # ----- Tokens aporte Paulo Tapia -----
     'INSTANCE_VAR',
@@ -134,8 +135,9 @@ t_RBRACE = r'\}'
 t_COMMA  = r','         
 t_LPAREN = r'\('        
 t_RPAREN = r'\)'
-t_DSTAR  = r'\*\*'      
-t_STAR   = r'\*'        
+t_DSTAR  = r'\*\*'
+t_STAR   = r'\*'
+t_DOT    = r'\.'        # punto para encadenamiento de métodos (gets.chomp)
 
 
 # --- Cadenas  ---

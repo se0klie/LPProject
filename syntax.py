@@ -100,7 +100,15 @@ def p_assignation(p):
         if isinstance(expr, dict):
             expr_type = expr["type"]
 
-            if expr_type != declared_type and expr_type != "Error":
+            # - inicio aporte christian macias -
+            # soporte para union types en verificación de tipo de asignación
+            if isinstance(declared_type, str) and '|' in declared_type:
+                _allowed = [t.strip() for t in declared_type.split('|')]
+            else:
+                _allowed = [declared_type]
+            # - fin aporte christian macias -
+
+            if expr_type not in _allowed and expr_type not in ("Error", "Unknown"):
                 semantic_errors.append(
                     f"Error semántico [línea {p.lineno(1)}]: no se puede asignar un valor de tipo "
                     f"'{expr_type}' a una variable de tipo '{declared_type}'."
@@ -282,6 +290,13 @@ def p_value(p):
                 "value": var_name
             }
         else:
+            # - inicio aporte christian macias -
+            # Regla Semántica 1: Uso de variable no declarada
+            if var_name not in builtin_functions:
+                semantic_errors.append(
+                    f"Error semántico [línea {p.lineno(1)}]: la variable '{var_name}' no ha sido declarada en el ámbito actual."
+                )
+            # - fin aporte christian macias -
             p[0] = {
                 "type": "Unknown",
                 "value": var_name
@@ -341,17 +356,36 @@ def p_error(p):
 
 # inicio aporte Christian Macias
 
+# Variables globales para las reglas semánticas
+constants_set = set()  # registra constantes declaradas (Regla Semántica 2)
+builtin_functions = {'puts', 'print', 'gets', 'p', 'pp', 'raise', 'exit', 'rand', 'chomp'}
+
 # Variables: Constantes y Union Types
+
+# Regla Semántica 2: Redeclaración de constante
 def p_const_assignation(p):
     '''
     const_assignation : CONST ASSIGN expression
     '''
+    const_name = p[1]
+    if const_name in constants_set:
+        semantic_errors.append(
+            f"Error semántico [línea {p.lineno(1)}]: la constante '{const_name}' no puede ser reasignada."
+        )
+    else:
+        constants_set.add(const_name)
+        if isinstance(p[3], dict):
+            symbol_table[const_name] = p[3].get("type", "Unknown")
+        else:
+            symbol_table[const_name] = "Unknown"
+    p[0] = {"node": "const_assignation", "name": const_name}
 
 def p_type_union(p):
     '''
     type_union : TYPE PIPE TYPE
                | type_union PIPE TYPE
     '''
+    p[0] = f"{p[1]} | {p[3]}"
 
 # Control: case / when / else
 def p_case_statement(p):
@@ -399,6 +433,19 @@ def p_named_tuple_pair(p):
     '''
     named_tuple_pair : ID COLON expression
     '''
+
+# Ingreso de datos por teclado: encadenamiento de métodos (gets.chomp, gets.chomp.to_i, gets.chomp.to_f)
+def p_value_method_chain(p):
+    '''
+    value : value DOT ID
+    '''
+    method = p[3]
+    if method == 'to_i':
+        p[0] = {"type": "Int32", "value": None}
+    elif method == 'to_f':
+        p[0] = {"type": "Float64", "value": None}
+    else:
+        p[0] = {"type": "String", "value": None}
 
 # fin aporte Christian Macias
 
