@@ -1,8 +1,11 @@
 import ply.yacc as yacc
-from lexer import tokens
+from lexer import tokens, lexer
 
 #aporte hailie jimenez
 errores=[]
+semantic_errors = []
+symbol_table = {}
+
 def p_program(p):
     '''
     program : statement_list
@@ -39,6 +42,7 @@ def p_parameters(p):
                | parameters COMMA parameter
                | empty
     '''
+    pass
 
 def p_parameter(p):
     '''
@@ -47,6 +51,18 @@ def p_parameter(p):
               | MULTIPLY ID
     '''
                 # Se agregó MULTIPLY ID para el splat *args (Aporte Christian Macias)
+
+    #Aporte Hailie Jimenez
+    if len(p) == 4:  # ID ASSIGN value
+        if isinstance(p[3], dict):
+            symbol_table[p[1]] = p[3]["type"]
+        p[0] = {"name": p[1], "type": symbol_table.get(p[1], "Unknown")}
+    elif len(p) == 2:  # ID solo
+        symbol_table[p[1]] = "Unknown"
+        p[0] = {"name": p[1], "type": "Unknown"}
+    else:  # MULTIPLY ID
+        symbol_table[p[2]] = "Unknown"
+        p[0] = {"name": p[2], "type": "Unknown"}
 
 def p_empty(p):
     'empty :'
@@ -62,6 +78,44 @@ def p_assignation(p):
     '''
                     # Se agregó la validación para type_union (Aporte Christian Macias)
                     # Se agrego  INSTANCE_VAR y CLASS_VAR (Aporte Paulo Tapia)
+    
+    #regla semantica 3 Hailie Jimenez
+
+    if len(p) == 4:
+        var_name = p[1]
+        expr = p[3]
+        if isinstance(expr, dict):
+            symbol_table[var_name] = expr["type"]
+        p[0] = {
+            "node": "assignation",
+            "name": var_name,
+            "value": expr
+        }
+
+    elif len(p) == 6:
+        var_name = p[1]
+        declared_type = p[3]
+        expr = p[5]
+
+        if isinstance(expr, dict):
+            expr_type = expr["type"]
+
+            if expr_type != declared_type and expr_type != "Error":
+                semantic_errors.append(
+                    f"Error semántico [línea {p.lineno(1)}]: no se puede asignar un valor de tipo "
+                    f"'{expr_type}' a una variable de tipo '{declared_type}'."
+                )
+
+            symbol_table[var_name] = declared_type
+
+    
+        p[0] = {
+            "node": "typed_assignation",
+            "name": var_name,
+            "declared_type": declared_type,
+            "value": expr
+        }
+    # print(f"[DEBUG assignation] {p[1]} = {p[3]} → symbol_table ahora: {symbol_table}")
 
 def p_operator(p):
     '''
@@ -77,6 +131,7 @@ def p_operator(p):
              | OR
             
     '''
+    p[0] = p[1] #hailie jimenez
     
 def p_hash(p):
     '''
@@ -107,6 +162,62 @@ def p_expression(p):
 
     '''
                 # Se agrego NOT expression (Aporte Paulo Tapia)
+    #regla semantica 4 Hailie Jimenez
+    if len(p) == 4:
+        left = p[1]
+        operator = p[2]
+        right = p[3]
+
+        # print(f"[DEBUG expression] {left} {operator} {right} → ", end="")
+
+        arithmetic_operators = ["+", "-", "*", "/"]
+        numeric_types = ["Int32", "Float64"]
+
+        if operator in arithmetic_operators:
+            left_type = left["type"] if isinstance(left, dict) else "Unknown"
+            right_type = right["type"] if isinstance(right, dict) else "Unknown"
+
+            # Si alguno es Unknown, no podemos validar — lo dejamos pasar sin error
+            if left_type == "Unknown" or right_type == "Unknown":
+                p[0] = {"type": "Unknown", "value": None}
+            elif left_type not in numeric_types or right_type not in numeric_types:
+                semantic_errors.append(
+                    f"Error semántico [línea {p.lineno(2)}]: operación '{operator}' no permitida "
+                    f"entre tipos '{left_type}' y '{right_type}'."
+                )
+                p[0] = {"type": "Error", "value": None}
+            else:
+                result_type = "Float64" if "Float64" in (left_type, right_type) else "Int32"
+                p[0] = {"type": result_type, "value": None}
+
+        else:
+            p[0] = {
+                "type": "Bool",
+                "value": None
+            }
+
+    elif len(p) == 2:
+        p[0] = p[1]
+
+    # Caso: NOT expression
+    elif len(p) == 3:
+        expr = p[2]
+
+        if isinstance(expr, dict) and expr["type"] != "Bool":
+            semantic_errors.append(
+                f"Error semántico [línea {p.lineno(1)}]: operador '!' no permitido "
+                f"con tipo '{expr['type']}'."
+            )
+
+            p[0] = {
+                "type": "Error",
+                "value": None
+            }
+        else:
+            p[0] = {
+                "type": "Bool",
+                "value": None
+            }
 
 
 def p_condition(p):
@@ -133,6 +244,66 @@ def p_value(p):
     '''
                 # Se agregaron tuple y named_tuple (Aporte Christian Macias)
                 # Se agrego array, INSTANCE_VAR, CLASS_VAR, SYMBOL y function_call
+
+    #rhailie jimenez
+    token_type = p.slice[1].type
+    value = p[1]
+    # print(f"[DEBUG value] token={p.slice[1].type} valor={p[1]} → {p[0]}")
+    if token_type == "INT":
+        p[0] = {
+            "type": "Int32",
+            "value": value
+        }
+
+    elif token_type == "FLOAT":
+        p[0] = {
+            "type": "Float64",
+            "value": value
+        }
+
+    elif token_type == "STRING":
+        p[0] = {
+            "type": "String",
+            "value": value
+        }
+
+    elif token_type == "BOOLEAN":
+        p[0] = {
+            "type": "Bool",
+            "value": value
+        }
+
+    elif token_type == "ID":
+        var_name = value
+
+        if var_name in symbol_table:
+            p[0] = {
+                "type": symbol_table[var_name],
+                "value": var_name
+            }
+        else:
+            p[0] = {
+                "type": "Unknown",
+                "value": var_name
+            }
+
+    elif token_type == "hash":
+        p[0] = {
+            "type": "Hash",
+            "value": value
+        }
+
+    elif token_type == "array":
+        p[0] = {
+            "type": "Array",
+            "value": value
+        }
+
+    else:
+        p[0] = {
+            "type": "Unknown",
+            "value": value
+        }
 
 def p_loop_statement(p):
     '''

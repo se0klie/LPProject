@@ -32,7 +32,6 @@ tokens = (
     'PIPE',       
     'CASE',       
     'WHEN',       
-    'THEN',       
     'ELSE',       
     'LBRACE',     
     'RBRACE',     
