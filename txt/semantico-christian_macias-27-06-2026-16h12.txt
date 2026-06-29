@@ -1,0 +1,26 @@
+Analizador: semantico | Desarrollador: christian_macias | Fecha: 27-06-2026-16h12
+============================================================
+
+=== Tabla de símbolos ===
+  MAX_INTENTOS: Int32
+  VERSION: String
+  codigo_estado: Int32 | String
+  registros: Unknown
+  coordenadas_red: Unknown
+  configuracion_servidor: Unknown
+  nivel_acceso: Int32
+  nombre: String
+  edad: Int32
+  saldo: Float64
+  resultado: Unknown
+
+=== Constantes registradas ===
+  VERSION
+  MAX_INTENTOS
+
+=== Errores sintácticos ===
+Error de sintaxis: fin inesperado del archivo
+
+=== Errores semánticos ===
+Error semántico [línea 6]: la constante 'MAX_INTENTOS' no puede ser reasignada.
+Error semántico [línea 30]: la variable 'variable_inexistente' no ha sido declarada en el ámbito actual.
