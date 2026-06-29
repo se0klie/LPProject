@@ -6,6 +6,7 @@ errores=[]
 semantic_errors = []
 symbol_table = {}
 
+
 def p_program(p):
     '''
     program : statement_list
@@ -232,6 +233,18 @@ def p_condition(p):
     '''
     condition : expression
     '''
+    # Regla Semantica 5 (Aporte Paulo Tapia)
+    # La condicion de un if/elsif debe evaluar a un valor booleano.
+    expr = p[1]
+    if isinstance(expr, dict):
+        expr_type = expr.get("type", "Unknown")
+        if expr_type not in ("Bool", "Unknown", "Error"):
+            linea = p.lineno(1) or p.lexer.lineno
+            semantic_errors.append(
+                f"Error semantico [linea {linea}]: la condicion debe ser de tipo "
+                f"'Bool', se encontro tipo '{expr_type}'."
+            )
+    p[0] = expr
 
 
 def p_value(p):
@@ -483,6 +496,22 @@ def p_array_elements(p):
                    | array_elements COMMA expression
                    | empty
     '''
+    # Regla Semantica 6 (Aporte Paulo Tapia)
+    # Los elementos de un array deben ser todos del mismo tipo.
+    if len(p) == 2:
+        p[0] = [] if p[1] is None else [p[1]]
+    else:
+        elementos = p[1] + [p[3]]
+        nuevo = p[3]
+        if elementos and isinstance(nuevo, dict):
+            primero = elementos[0]
+            if isinstance(primero, dict) and nuevo["type"] not in (primero["type"], "Unknown"):
+                semantic_errors.append(
+                    f"Error semantico [linea {p.lineno(2)}]: el array mezcla el tipo "
+                    f"'{primero['type']}' con '{nuevo['type']}'."
+                )
+        p[0] = elementos
+ 
  
 # Funcion: return y llamada con argumentos
 def p_return_statement(p):

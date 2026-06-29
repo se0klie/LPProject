@@ -75,7 +75,7 @@ reserved = {
 
 #Estructuras if/elseif y return (Aporte Paulo Tapia)
     'if': 'IF',
-    'elseif': 'ELSIF',
+    'elsif': 'ELSIF',
     'return': 'RETURN',
 #Fin Aporte Paulo Tapia
 

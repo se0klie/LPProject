@@ -1,0 +1,4 @@
+
+Errores semánticos:
+Error semantico [linea 61]: la condicion debe ser de tipo 'Bool', se encontro tipo 'Int32'.
+Error semantico [linea 65]: el array mezcla el tipo 'Int32' con 'String'.

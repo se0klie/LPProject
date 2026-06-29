@@ -23,3 +23,11 @@ resultado = calcular_total(3)
  
 puts precios
 puts resultado
+
+# Regla Semantica 5: condicion de if que no es booleana (debe generar error)
+if stock_minimo
+  puts "esto no deberia ser valido"
+end
+ 
+# Regla Semantica 6: array con tipos mezclados (debe generar error)
+mezclado = [1, 2, "tres"]
